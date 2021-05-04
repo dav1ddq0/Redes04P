@@ -321,6 +321,15 @@ class Device_handler:
                             portbuff.transmitting = False
                             portbuff.bit_sending = None                     
 
+    def send_arp(self, origen, destiny_mac, ip, time, mode):
+        data = ''
+        if mode == 'q':
+            data = netl.ARPQuery(ip)
+            self.send_frame(origen, destiny_mac, data, time)
+        else:
+            data = netl.ARPQuery
+            self.send_frame(origen, '')    
+
 
     def send_frame(self ,origin_pc, destiny_mac:str, data:str, time: int):
         # actualiza primero la red por si todavia no ha llegado a time

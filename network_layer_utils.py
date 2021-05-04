@@ -15,6 +15,15 @@ def ARPQuery(ip):
     return bin_ascii + bin_ip
 
 
+def ARPResponse(ip):
+    bin_ascii=''
+    for c in 'ARPR':
+        bin_ascii += format(ord(c), '08b')
+    bin_ip =''
+    for n in ip.split('.'):
+        bin_ip += format(int(n),'08b')
+    return bin_ascii + bin_ip
+
 def IP_Package(ori_ip,des_ip):
     package = ""
     for n in des_ip.split('.'):

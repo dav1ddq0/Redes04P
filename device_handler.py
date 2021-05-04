@@ -157,10 +157,9 @@ class Device_handler:
     def setup_ip(self, name, ip , mask):
         if self.__validate_ip(name, ip, mask):
             if any(h.name == name for h in self.hosts):
-                self.ports[origin_pc+'_1'].device
-
-
+                self.ports[f"{name}_1"].device.setup_ip(ip,mask)
             else:
+                return None
 
 
             

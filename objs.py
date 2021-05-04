@@ -65,14 +65,17 @@ class Host:
         self.mac = None
         # se escribiran solamente los datos recibidos por esta PC y quien los recibio
         self.file_d =f"./Hosts/{name}_data.txt"
+        self.payload =f"./Hosts/{name}_payload.txt"
         self.incoming_frame =""
         self.slot_time = 3
         self.error_detection = error_detection
         self.ip = None
-        self.mask =
+        self.mask = None
         f = open(self.file, 'w')
         f.close()
         f = open(self.file_d, 'w')
+        f.close()
+        f = open(self.payload,'w')
         f.close()
         
     def setup_ip(self, ip, mask):
@@ -101,6 +104,8 @@ class Host:
             message = f"{time} {source_mac} {datahex}"
         self.__update_file(message, self.file_d)
 
+    def log_payload(self):None
+    
     def data(self, origin_mac, data_frame, time):
         message = f"{time} {origin_mac} {data_frame}"
         self.__update_file(message)

@@ -17,6 +17,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
 class Device_handler:
     # @property
     # def hosts(self):
@@ -33,6 +34,9 @@ class Device_handler:
         # las operaciones necesarias
         self.ports = {}
         self.devices_visited = []
+        objs.handler = self
+        netl.handler = self
+
 
     def __validate_send(self, host) -> bool:
 
@@ -93,6 +97,14 @@ class Device_handler:
         
         return True    
 
+    def __validate_send_packet(self, host_name, des_ip, data):
+        if not any(h.name == host_name for h in self.hosts):
+            return False
+        if not netl.ValidIP(des_ip):
+            return False
+        if not all(c in string.hexdigits for c in data):
+            return False
+        return True            
 
     def __valid_mac(self,mac) -> bool:                                #broadcast
         return any(host.mac == mac for host in self.hosts)  or mac == 'FFFF'
@@ -102,9 +114,13 @@ class Device_handler:
             return False
         if not self.__valid_mac(destiny_mac):
             return False
+        
+        return True            
+
+    def __validate_data_hex(self,data):
         if not all(c in string.hexdigits for c in data):
             return False
-        return True            
+        return True    
 
     def __validate_ip(self, name, ip, mask):
         if all(h.name != name for h in self.hosts) and all(r.name != name for r in self.routers):
@@ -113,6 +129,7 @@ class Device_handler:
             return False
         return True
 
+    
 
 
     def finished_network_transmission(self):
@@ -321,14 +338,24 @@ class Device_handler:
                             portbuff.transmitting = False
                             portbuff.bit_sending = None                     
 
-    def send_arp(self, origen, destiny_mac, ip, time, mode):
-        data = ''
-        if mode == 'q':
-            data = netl.ARPQuery(ip)
-            self.send_frame(origen, destiny_mac, data, time)
-        else:
-            data = netl.ARPQuery
-            self.send_frame(origen, '')    
+
+
+
+
+    def add_more_zeros(data:str):
+        morezeros = len(data)%8
+        for i in range(morezeros):
+            data = '0' +data
+        return data
+        
+    def setup_data(self,data):
+        databin = format(int(data, base = 16), '08b')
+        databin= self.add_more_zeros(databin)
+        return databin    
+
+    def setup_send_frame(self, origin_pc, destiny_mac, datahex, time):
+        data_bin = self.setup_data(datahex)
+        self.send_frame(origin_pc, destiny_mac, data_bin, time)
 
 
     def send_frame(self ,origin_pc, destiny_mac:str, data:str, time: int):
@@ -338,12 +365,11 @@ class Device_handler:
         if self.__validate_send_frame(origin_pc, destiny_mac, data):
             host = self.ports[f'{origin_pc}_1'].device
             if self.error_detection == 'crc':
-                encode = format(int(errors_algs.CRCEncode(data), base = 2), '08b')
+                encode = self.add_more_zeros(format(int(errors_algs.CRCEncode(data), base = 2), '08b'))
             else:
                 _,redundant_bits_amount = errors_algs.hamming_encode(data)
-                encode = format(redundant_bits_amount, '08b')
-            databin = format(int(data, base = 16), '08b')
-            data_frame = format(int(destiny_mac, base = 16), '16b') + format(int(host.mac, base=16), '16b') + format(len(databin)//8, '08b') + format(len(encode)//8, '08b') + databin + encode
+                encode = self.add_more_zeros(format(redundant_bits_amount, '08b'))
+            data_frame = format(int(destiny_mac, base = 16), '016b') + format(int(host.mac, base=16), '016b') + format(len(data)//8, '08b') + format(len(encode)//8, '08b') + data + encode
             host.add_frame(data_frame)
             # en caso que el host este disponible para enviar pues el mismo puede estar
             # en medio de una transmision o estar esperando producto de una colision a enviar un dato fallido 
@@ -368,3 +394,11 @@ class Device_handler:
                 host.init_transmission(self.devices_visited, nextbit, time)
 
                 
+    def send_packet(self, host_name, des_ip,  data, time):
+        self.__update_network_status(time)
+        if self.__validate_send_packet(host_name, des_ip, data):
+            host = self.ports[host_name+'_1'].device
+            bin_data = self.setup_data(data)
+            host.add_packet(des_ip, bin_data)
+            netl.search_ip(host, 'FFFF', des_ip)
+        

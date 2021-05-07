@@ -2,11 +2,21 @@ from enum import Enum
 import queue
 import random
 import errors_algs
-
+import network_layer_utils as netl
+handler = None
 class Data(Enum):
     Null = "Null"
     One = "1"
     Zero = "0"
+
+class Packet:
+    def __init__(self, mac_ori , ori_ip, des_ip, data, host):
+        self.ori_ip = ori_ip
+        self.des_ip = des_ip
+        self.data = data
+        self.mac_ori = mac_ori
+        self.mac_des = None
+        self.host = host
 
 class Cable:
     def __init__(self):
@@ -71,6 +81,7 @@ class Host:
         self.error_detection = error_detection
         self.ip = None
         self.mask = None
+        self.packets = []
         f = open(self.file, 'w')
         f.close()
         f = open(self.file_d, 'w')
@@ -78,6 +89,14 @@ class Host:
         f = open(self.payload,'w')
         f.close()
         
+    def add_packet(self, des_ip, data):
+        p = Packet(self.mac, self.ip, des_ip, data)
+        self.packets.append(p)
+
+    
+    def remove_packet(self, packet):
+        self.packets.remove(packet)
+
     def setup_ip(self, ip, mask):
         self.ip = ip
         self.mask = mask
@@ -104,7 +123,8 @@ class Host:
             message = f"{time} {source_mac} {datahex}"
         self.__update_file(message, self.file_d)
 
-    def log_payload(self):None
+    def log_payload(self):
+        pass
     
     def data(self, origin_mac, data_frame, time):
         message = f"{time} {origin_mac} {data_frame}"
@@ -182,6 +202,7 @@ class Host:
             if len(data_plus_verificationd) == nsizebits + len_verification_data:
                 #obtengo en hexadecimal la data 
                 data = self.rframe[48:48+nsizebits]
+                netl.checkARP(self, origin_mac, data)
                 verification_data = self.rframe[48+nsizebits:]
                 datahex = '{:X}'.format(int(data,2))
                 if self.error_detection =='crc':

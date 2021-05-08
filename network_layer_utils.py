@@ -20,10 +20,19 @@ def checkARP(host, des_mac, bits):
                     packet.mac_des = host.mac
             check_PackageCondition(host)     
 
+
+
+def is_ip_packet(data):
+    if len(data) > 88:
+        payload_size = int(data[80:88],2) *8
+        payload = data[88:]
+        return payload_size == len(payload)
+    return False
+
 def search_ip(host, des_mac, des_ip):
     q = ARPQuery(des_ip)
     handler.send_frame(host, des_mac, q, handler.time)
-    
+
 # obtein ip format {Int}.{Int}.{Int}.{Int} from bits chunk where 1byte(8bits) represent a number from ip
 def get_ip_from_bin(binIP):
     a = f"{int(binIP[0:8],2)}.{int(binIP[8:16],2)}.{int(binIP[16:24],2)}.{int(binIP[24:32],2)}"
@@ -73,43 +82,11 @@ def ip_package(ori_ip,des_ip, payload, ttl=0, protocol=0):
     package += payload
     return package    
 
-def send_arp(origen, destiny_mac, ip, mode):
-    data = ''
-    if mode == 'q':
-        data = ARPQuery(ip)
-        handler.send_frame(origen, destiny_mac, data, handler.time)
-    else:
-        data = ARPResponse
-        handler.send_frame(origen, destiny_mac, data, handler.time) 
-
-ip = get_bin_from_ip(input())
-print(get_ip_from_bin(ip))
-
-# def setup_data(data):
-#         databin = format(int(data, base = 16), '08b')
-#         morezeros = len(databin)%8
-#         for i in range(morezeros):
-#             databin = '0' +databin
-#         return databin
-
-# A = input()
-# qr = input()
-# k = ARPQuery(qr)
-# print(k)
-# print(len(k))
-# print(f"{chr(int(k[0:8],2))}\n{chr(int(k[8:16],2))}\n{chr(int(k[16:24],2))}\n{chr(int(k[24:32],2))}")
-# a = chr(int(k[0:8],2)) + chr(int(k[8:16],2)) + chr(int(k[16:24],2)) + chr(int(k[24:32],2))
-# print(a)
-# x ='{:X}'.format(int(k,2))
-# print(x)
-
-# j= "{0:8b}".format(int(A, base=16))
-# print(j)
-# print(len(j))
-# l = setup_data(A)
-# print(l)
-# print(len(l))
-# print(a == "ARPQ")
-# b = f"{int(k[32:40],2)}.{int(k[40:48],2)}.{int(k[48:56],2)}.{int(k[56:64],2)}"
-# print(b)
-# print(b==qr)
+# def send_arp(origen, destiny_mac, ip, mode):
+#     data = ''
+#     if mode == 'q':
+#         data = ARPQuery(ip)
+#         handler.send_frame(origen, destiny_mac, data, handler.time)
+#     else:
+#         data = ARPResponse
+#         handler.send_frame(origen, destiny_mac, data, handler.time) 

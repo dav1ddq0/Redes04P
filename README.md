@@ -1,5 +1,20 @@
 # Redes04P
 
+Dado que ahora los host tiene un IP y una máscara de subred ahora representamos con la class Host que tenemos en objs.py esa información con las siguientes propiedades:
+
+```
+self.ip
+self.mask
+```
+
+Las cuales van a estar inicialmente en None hasta que se le asigne con el comando ip
+
+Además creamos un nuevo fichero _payload.txt  en host el cual va a ir guardando los datos recibido por esa pc en la cada de red
+
+
+
+
+
 En network_layer_utils.py están la mayoría de los métodos que vamos a usar para esta capa de red.
 
 

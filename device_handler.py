@@ -171,7 +171,8 @@ class Device_handler:
         for port in newswitch.ports:
             self.ports[port.name] = port
 
-    def setup_ip(self, name, ip , mask):
+    def setup_ip(self, name, interface, ip, mask, time):
+        self.__update_network_status(time)
         if self.__validate_ip(name, ip, mask):
             if any(h.name == name for h in self.hosts):
                 self.ports[f"{name}_1"].device.setup_ip(ip,mask)

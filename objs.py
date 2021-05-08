@@ -123,8 +123,14 @@ class Host:
             message = f"{time} {source_mac} {datahex}"
         self.__update_file(message, self.file_d)
 
-    def log_payload(self):
-        pass
+    def log_payload(self, data, time):
+        des_ip = netl.get_ip_from_bin(data[0:32])
+        if des_ip == self.ip:
+            ori_ip = netl.get_ip_from_bin(data[32:64])
+            payload = '{:X}'.format(int(data[88:],2))
+            message = f"{time} {ori_ip} {payload}"
+            self.__update_file(message, self.payload)
+
     
     def data(self, origin_mac, data_frame, time):
         message = f"{time} {origin_mac} {data_frame}"
@@ -202,7 +208,12 @@ class Host:
             if len(data_plus_verificationd) == nsizebits + len_verification_data:
                 #obtengo en hexadecimal la data 
                 data = self.rframe[48:48+nsizebits]
+                # check if a frame es from ARP Protocol
                 netl.checkARP(self, origin_mac, data)
+                # if frame es ip packet
+                if netl.is_ip_packet(data):
+                    self.log_payload(data, time)
+
                 verification_data = self.rframe[48+nsizebits:]
                 datahex = '{:X}'.format(int(data,2))
                 if self.error_detection =='crc':

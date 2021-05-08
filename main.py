@@ -5,7 +5,7 @@ import myParser
 #load the configurable signal_time
 slot_time = int(open('./signal_time.txt', 'r').readline())
 # load the configurable error_detection
-error_detection = open('./config.txt', 'r').readline()
+error_detection = open('./config.txt', 'r').readline().replace('\n','')
 
 handler = dh.Device_handler(slot_time, error_detection)
 # dicc that func like a launcher to the principal methods

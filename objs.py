@@ -10,13 +10,12 @@ class Data(Enum):
     Zero = "0"
 
 class Packet:
-    def __init__(self, mac_ori , ori_ip, des_ip, data, host):
+    def __init__(self, mac_ori , ori_ip, des_ip, data):
         self.ori_ip = ori_ip
         self.des_ip = des_ip
         self.data = data
         self.mac_ori = mac_ori
         self.mac_des = None
-        self.host = host
 
 class Cable:
     def __init__(self):

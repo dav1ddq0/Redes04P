@@ -5,7 +5,8 @@ caller ={
         "disconnect" : lambda args, time :  disconnect_parse(args, time),
         "send_frame" : lambda args, time : send_frame_parse(args, time),
         "mac" : lambda args, time : mac_parse(args, time),
-        "ip" : lambda args, time : ip_parse(args, time)
+        "ip" : lambda args, time : ip_parse(args, time),
+        "send_packet" : lambda args, time : send_packet_parse(args, time)
         }
 
 
@@ -126,7 +127,7 @@ def disconnect_parse(args: list,time: int):
     else:
         print("Invalid format")    
 
-def ip_parse(args:list ,time:int):
+def ip_parse(args:list, time:int):
     if len(args) == 4:
         t = args[1]
         host = None
@@ -140,5 +141,12 @@ def ip_parse(args:list ,time:int):
         else:
             interface = int(interface)            
         return args[0], [host, interface, args[2], args[3], time]
+    else:
+        print("Invalid amount of arguments")
+
+# send_packet <host> <ip destino> <data>
+def send_packet_parse(args:list, time:int):
+    if len(args) == 4:
+        return args[0], [args[1], args[2], args[3], time]
     else:
         print("Invalid amount of arguments")

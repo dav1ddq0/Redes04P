@@ -109,7 +109,7 @@ class Device_handler:
     def __valid_mac(self,mac) -> bool:                                #broadcast
         return any(host.mac == mac for host in self.hosts)  or mac == 'FFFF'
 
-    def __validate_send_frame(self,host, destiny_mac, data):
+    def __validate_send_frame(self,host, destiny_mac):
         if not any(host == h.name for h in self.hosts):
             return False
         if not self.__valid_mac(destiny_mac):
@@ -343,27 +343,29 @@ class Device_handler:
 
 
 
-    def add_more_zeros(data:str):
-        morezeros = len(data)%8
+    def add_more_zeros(self, data:str):
+        morezeros = len(data) % 8
         for i in range(morezeros):
             data = '0' +data
         return data
         
     def setup_data(self,data):
         databin = format(int(data, base = 16), '08b')
-        databin= self.add_more_zeros(databin)
-        return databin    
+        return  self.add_more_zeros(databin)   
 
     def setup_send_frame(self, origin_pc, destiny_mac, datahex, time):
-        data_bin = self.setup_data(datahex)
-        self.send_frame(origin_pc, destiny_mac, data_bin, time)
+        if self.__validate_data_hex(datahex):
+            data_bin = self.setup_data(datahex)
+            self.send_frame(origin_pc, destiny_mac, data_bin, time)
+        else:
+            print('Data not in hex')
 
 
     def send_frame(self ,origin_pc, destiny_mac:str, data:str, time: int):
         # actualiza primero la red por si todavia no ha llegado a time
         self.__update_network_status(time)
 
-        if self.__validate_send_frame(origin_pc, destiny_mac, data):
+        if self.__validate_send_frame(origin_pc, destiny_mac):
             host = self.ports[f'{origin_pc}_1'].device
             if self.error_detection == 'crc':
                 encode = self.add_more_zeros(format(int(errors_algs.CRCEncode(data), base = 2), '08b'))

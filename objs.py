@@ -471,9 +471,8 @@ class Switch:
                 len_verification_data = int(incoming_frame[40:48], 2) * 8
                 checkrest = incoming_frame[48:]
                 
-                if len(checkrest) == lendatabits:
+                if len(checkrest) == lendatabits + len_verification_data:
                     destiny_mac = '{:X}'.format(int(incoming_frame[0:16], 2))
-
                     # en caso que la mac este guardada en la tabla de del switch
                     if destiny_mac not in self.map.keys():
                         

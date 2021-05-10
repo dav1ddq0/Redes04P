@@ -191,12 +191,18 @@ class Host:
 
         return None
 
+    # comprueba si la mac destino coincide con la mac del frame o es broadcast
+    def is_for_me(self, mac):
+        return mac == 'FFFF' or mac==self.mac
+    
     def receive(self, bit, incoming_port, devices_visited, time):
         self.log(bit, "receive", time)
         self.rframe +=bit
         if len(self.rframe) > 48:
             #obtengo la mac de la pc que mando el frame origen
             origin_mac = '{:X}'.format(int(self.rframe[16:32], 2))
+            #obtengo la mac destino del frame
+            des_mac ='{:X}'.format(int(self.rframe[0:16], 2))
             #obtengo la cantidad de bits que debe de tener la data del frame            
             nsizebits = int(self.rframe[32:40], 2) * 8 # size in bytes 8*size = size en bits
             
@@ -204,8 +210,9 @@ class Host:
             
             data_plus_verificationd = self.rframe[48:]
             # la trama que llego a la pc es valida
-            if len(data_plus_verificationd) == nsizebits + len_verification_data:
+            if len(data_plus_verificationd) == nsizebits + len_verification_data and self.is_for_me(des_mac):
                 #obtengo en hexadecimal la data 
+                # print(f"{origin_mac}--{des_mac} vs {self.mac}")
                 data = self.rframe[48:48+nsizebits]
                 # check if a frame es from ARP Protocol
                 netl.checkARP(self, origin_mac, data)

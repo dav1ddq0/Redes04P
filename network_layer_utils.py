@@ -17,7 +17,7 @@ def checkARP(host, des_mac, bits):
         if word == 'ARPR':
             for packet in host.packets:
                 if packet.des_ip == ip:
-                    packet.mac_des = host.mac
+                    packet.mac_des = des_mac
             check_PackageCondition(host)     
 
 

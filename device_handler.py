@@ -19,9 +19,7 @@ class bcolors:
 
 
 class Device_handler:
-    # @property
-    # def hosts(self):
-    #     return self.hosts
+    
 
     def __init__(self, slot_time: int, error_detection:str) -> None:
         self.hosts = []

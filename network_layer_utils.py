@@ -81,12 +81,3 @@ def ip_package(ori_ip,des_ip, payload, ttl=0, protocol=0):
     package += format(len(payload)//8, '08b')
     package += payload
     return package    
-
-# def send_arp(origen, destiny_mac, ip, mode):
-#     data = ''
-#     if mode == 'q':
-#         data = ARPQuery(ip)
-#         handler.send_frame(origen, destiny_mac, data, handler.time)
-#     else:
-#         data = ARPResponse
-#         handler.send_frame(origen, destiny_mac, data, handler.time) 

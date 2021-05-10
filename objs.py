@@ -117,9 +117,9 @@ class Host:
     def log_frame(self, source_mac, datahex, time,corrupted=False):
         
         if corrupted:
-            message = f"{time} {source_mac} the information{datahex} is corrupt"
+            message = f"{time} {source_mac} the information{datahex} is corrupt\n"
         else:
-            message = f"{time} {source_mac} {datahex}"
+            message = f"{time} {source_mac} {datahex}\n"
         self.__update_file(message, self.file_d)
 
     def log_payload(self, data, time):
@@ -127,7 +127,7 @@ class Host:
         if des_ip == self.ip:
             ori_ip = netl.get_ip_from_bin(data[32:64])
             payload = '{:X}'.format(int(data[88:],2))
-            message = f"{time} {ori_ip} {payload}"
+            message = f"{time} {ori_ip} {payload}\n"
             self.__update_file(message, self.payload)
 
     

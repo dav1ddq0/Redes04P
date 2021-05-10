@@ -3,10 +3,7 @@
 /.vscode
 
 #
-Files
-Hosts/
-Hubs/
-Switches/
+Devices_Logs/
 images/
 .idea/
 

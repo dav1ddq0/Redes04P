@@ -54,7 +54,7 @@ class Host:
         portname = f"{name}_1"
         port = Port(portname, self)
         self.port = port
-        self.file = f"./Hosts/{name}.txt"
+        self.file = f"./Devices_Logs/Hosts/{name}.txt"
         self.data = ""
         # guarda todos los bloques de cadenas que aun no han sido enviados
         self.data_pending = queue.Queue()
@@ -73,8 +73,8 @@ class Host:
         # direccion mac que tendria la PC
         self.mac = None
         # se escribiran solamente los datos recibidos por esta PC y quien los recibio
-        self.file_d =f"./Hosts/{name}_data.txt"
-        self.payload =f"./Hosts/{name}_payload.txt"
+        self.file_d =f"./Devices_Logs/Hosts/{name}_data.txt"
+        self.payload =f"./Devices_Logs/Hosts/{name}_payload.txt"
         self.incoming_frame =""
         self.slot_time = 3
         self.error_detection = error_detection
@@ -285,7 +285,7 @@ class Hub:
     def __init__(self, name: str, ports_amount: int) -> None:
         self.name = name
         self.connections = [None] * ports_amount
-        self.file = f"./Hubs/{name}.txt"
+        self.file = f"./Devices_Logs/Hubs/{name}.txt"
         self.ports = []  # instance a list of ports
         # con esto se si el hub esta retrasmitiendo la informacion proveniente de un host que esta enviando info y que informacion
         # es resulta util para detectar colisiones
@@ -397,7 +397,7 @@ class Buffer:
 class Switch:
     def __init__(self, name: str, ports_amount: int) -> None:
         self.name = name
-        self.file = f"./Switches/{name}.txt"
+        self.file = f"./Devices_Logs/Switches/{name}.txt"
         self.ports = []  # instance a list of ports
         # con esto se si el hub esta retrasmitiendo la informacion proveniente de un host que esta enviando info y que informacion
         

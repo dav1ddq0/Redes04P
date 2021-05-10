@@ -3,13 +3,23 @@
 
 <center>Javier Domínguez C312</center>
 
-Ejecutar:
+### Para ejecuar el proyecto:
 
 ```
 python main.py -f file.txt
 ```
 
-para ejecuar el proyecto
+Ahora para más organización y dado que tenemos más archivos de registros para los dispositivos de la red tenemos en la carpeta Devices_Log una carpeta para cada dispositivo de la red dentro de la cua están los logs de cada cada de cada dispositivo
+
+### <img src="/home/davido/Documents/Proyectos/4/Redes04P/images/fig_3.1.png" alt="fig_3.1" style="zoom:50%;" />	
+
+<img src="/home/davido/Documents/Proyectos/4/Redes04P/images/fig_3.2.png" alt="fig_3.2" style="zoom:50%;" />
+
+
+
+
+
+### Informe :
 
 En network_layer_utils.py están la mayoría de los métodos que vamos a usar para esta capa de red.
 
@@ -32,15 +42,15 @@ Al enviar un paquete con el comando send_packet ocurre lo siguiente :
 - add_packet crea una instancia de Packet con la mac_ori como la mac del host a enviar el packet, el ip destino el que se le paso como parametro , el ip origen el del host a enviar el packet , la data como data que se le pasó como parámetro y se deja la mac de destino en None pues se desconoce inicialmente.
 - Luego que se agrega el packet a la lista de packet sin enviar del host, el cual permanece ahí hasta que se conozca la mac del destino, se enviá un frame especial ARPQ el cual se manda con mac destino FFFF para que llegue a todo el mundo y le responderá solo el host que tenga ip igual al que se manda oculto en el frame respondiendo con un frame especial ARPR de respuesta.
 - Una vez que llegue al host que debe enviar el packet el frame especial ARPR con la mac correspondiente al ip del packet entonces se procede a enviar el packet 
-- Se crea un ip packet con el método en network_layer_utils.py ip_package  el cual forma una data de la 8 bytes para el ip destino 8 byte para el ip origen 1 byte con 0 que representa ttl y 1 byte con 0 que representa el protocol
+- Se crea un ip packet con el método en network_layer_utils.py ip_package  el cual forma una data de la 4 bytes para el ip destino 4 byte para el ip origen 1 byte con 0 que representa ttl y 1 byte con 0 que representa el protocol
 - ese ip_packet creado se encapsula en un frame como data y se envia a la mac destino obtenida previamente por el ARPR 
-- una vez que llegue ese frame al destino se obteine el payload que estaba dentro del ip_packet y se escribe en el log_payload poniendo el ip desde donde se le envió ese payload
+- una vez que llegue ese frame al destino se obtiene el payload que estaba dentro del ip_packet y se escribe en el log_payload poniendo el ip desde donde se le envió ese payload.
 
 
 
-ARP Protocol:
+### ARP Protocol:
 
-Para mandar una sennal de ARP le entramos un ip para formar la data de ese frame 
+Para mandar una señal de ARP le entramos un ip para formar la data de ese frame 
 
 En caso que sea ARPQ formamos la data del frame con 8 bytes de la siguiente forma:
 
@@ -74,5 +84,26 @@ def get_bin_from_ascii(word):
     return bin_ascii
 ```
 
- 
+ Luego enviamos desde el mismo host que se quiere enviar el packet un frame conde la mac destino es 'FFFF' y la data lo antes explicados
 
+Para el ARPR construimos la data similar al ARPQ lo que en vez de tenr ARPQ en código ASCII tenemos ARPR ,la mac destino ahora es la mac origen del frame enviado por ARPQ, y la mac origen es la de la pc que llegó el ARPQ.
+
+
+
+**IP Package:**
+
+  
+
+```
+# obtenemos el ip_package 
+def ip_package(ori_ip,des_ip, payload, ttl=0, protocol=0):
+    package = ""
+    package += bin_ip(des_ip) + bin_ip(ori_ip)
+    package += format(ttl,'08b') + format(protocol, '08b')
+    package += format(len(payload)//8, '08b')
+    package += payload
+    return package    
+
+```
+
+Para formar el ip package  formamos una cadena binaria donde los primeros 8bits

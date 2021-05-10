@@ -4,11 +4,11 @@
 
 #
 Files
-./Hosts
-./Hubs
-./Switches
-./images
-./.idea
+Hosts/
+Hubs/
+Switches/
+images/
+.idea/
 
-./file.txt
-./casos_de_prueba
+file.txt
+casos_de_prueba/

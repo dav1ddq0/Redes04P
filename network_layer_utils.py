@@ -3,9 +3,9 @@ import re
 handler = None
 
 def check_PackageCondition(host):
-    for packet in host.packages:
+    for packet in host.packets:
         if packet.mac_des != None:
-            setupFrameFromPacket(packet)
+            setupFrameFromPacket(packet, host)
             host.remove_packet(packet)
 
 def checkARP(host, des_mac, bits):
@@ -13,7 +13,7 @@ def checkARP(host, des_mac, bits):
         ip = get_ip_from_bin(bits[32:]) # convert bits chunk to {}.{}.{}.{} ip format 
         word = get_ascii_from_bin(bits[0:32]) # convert
         if word == 'ARPQ':
-            handler.send_frame(host, des_mac, ARPResponse(ip), handler.time)
+            handler.send_frame(host.name, des_mac, ARPResponse(ip), handler.time)
         if word == 'ARPR':
             for packet in host.packets:
                 if packet.des_ip == ip:
@@ -31,7 +31,7 @@ def is_ip_packet(data):
 
 def search_ip(host, des_mac, des_ip):
     q = ARPQuery(des_ip)
-    handler.send_frame(host, des_mac, q, handler.time)
+    handler.send_frame(host.name, des_mac, q, handler.time)
 
 # obtein ip format {Int}.{Int}.{Int}.{Int} from bits chunk where 1byte(8bits) represent a number from ip
 def get_ip_from_bin(binIP):
@@ -47,9 +47,9 @@ def get_bin_from_ip(ip):
 def get_ascii_from_bin(bits):
     return chr(int(bits[0:8],2)) + chr(int(bits[8:16],2)) + chr(int(bits[16:24],2)) + chr(int(bits[24:32],2))
 
-def setupFrameFromPacket(packet):
-    data = ip_package(packet.ori_ip,packet.des_ip, packet.payload)
-    handler.send_frame(packet.host.name, packet.mac_des, data, handler.time)
+def setupFrameFromPacket(packet, host):
+    data = ip_package(packet.ori_ip,packet.des_ip, packet.data)
+    handler.send_frame(host.name, packet.mac_des, data, handler.time)
 
 def ValidIP(input:str):
     regex ="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"

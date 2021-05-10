@@ -376,10 +376,7 @@ class Buffer:
 
     def put_data(self, bit):
         self.incoming_frame += bit       
-            
-
-    
-
+        
 
     def next_bit(self):
         n = len(self.sending_frame)
@@ -456,7 +453,7 @@ class Switch:
         else:
             # se cumplio el maximo de intentos fallidos permitidos por lo que se decide perder esa info                 
             pbuffer.stopped = True
-            next_bit = self.next_bit()
+            next_bit = pbuffer.next_bit()
             if next_bit != None:
                 pbuffer.bit_sending = next_bit
                 pbuffer.stopped = True
@@ -497,14 +494,14 @@ class Switch:
                         nextport = self.map[destiny_mac]
                         npbuffer = self.buffers[nextport.name]
                         if npbuffer.sending_frame != "":
-                            npbuffer.send_frame_pending.put(incoming_frame)
+                            npbuffer.sending_frame_pending.put(incoming_frame)
                         else:
                             npbuffer.sending_frame = incoming_frame
                         nextbit = npbuffer.next_bit()
                         self.init_transmission(nextbit, nextport, devices_visited, time)
+                    
+                    mybuffer.incoming_frame = ""
                 
-                # mybuffer.incoming_frame = ""
-
 
     def init_transmission(self, nextbit, incoming_port, devices_visited, time):
         buffer = self.buffers[incoming_port.name]
@@ -524,7 +521,7 @@ class Switch:
         nextport = incoming_port.next
         nextport.device.receive(bit, incoming_port, devices_visited, time)
         
-                
+
 
 
 

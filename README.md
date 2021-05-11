@@ -1,4 +1,4 @@
-# <center>Informe Redes04P Capa de Red ParteI</center>
+# <center>Informe Redes04P Capa de Red Parte I</center>
 <center>David Orlando De Quesada Oliva C311</center>
 
 <center>Javier Domínguez C312</center>
@@ -40,7 +40,7 @@ Al enviar un paquete con el comando send_packet ocurre lo siguiente :
 
 - El host que va a enviar el packet crea una instancia de Packet con el método add_packet el cual recibe el ip destino y la data que quiere enviar el paquete en binario
 - add_packet crea una instancia de Packet con la mac_ori como la mac del host a enviar el packet, el ip destino el que se le paso como parametro , el ip origen el del host a enviar el packet , la data como data que se le pasó como parámetro y se deja la mac de destino en None pues se desconoce inicialmente.
-- Luego que se agrega el packet a la lista de packet sin enviar del host, el cual permanece ahí hasta que se conozca la mac del destino, se enviá un frame especial ARPQ el cual se manda con mac destino FFFF para que llegue a todo el mundo y le responderá solo el host que tenga ip igual al que se manda oculto en el frame respondiendo con un frame especial ARPR de respuesta.
+- Luego que se agrega el packet a la lista de packets sin enviar del host, el cual permanece ahí hasta que se conozca la mac del destino, se enviá un frame especial ARPQ el cual se manda con mac destino FFFF para que llegue a todo el mundo y le responderá solo el host que tenga ip igual al que se manda oculto en el frame respondiendo con un frame especial ARPR de respuesta.
 - Una vez que llegue al host que debe enviar el packet el frame especial ARPR con la mac correspondiente al ip del packet entonces se procede a enviar el packet 
 - Se crea un ip packet con el método en network_layer_utils.py ip_package  el cual forma una data de la 4 bytes para el ip destino 4 byte para el ip origen 1 byte con 0 que representa ttl y 1 byte con 0 que representa el protocol
 - ese ip_packet creado se encapsula en un frame como data y se envia a la mac destino obtenida previamente por el ARPR 
@@ -84,9 +84,9 @@ def get_bin_from_ascii(word):
     return bin_ascii
 ```
 
- Luego enviamos desde el mismo host que se quiere enviar el packet un frame conde la mac destino es 'FFFF' y la data lo antes explicados
+ Luego enviamos desde el mismo host que se quiere enviar el packet un frame donde la mac destino es 'FFFF' y la data lo antes explicado.
 
-Para el ARPR construimos la data similar al ARPQ lo que en vez de tenr ARPQ en código ASCII tenemos ARPR ,la mac destino ahora es la mac origen del frame enviado por ARPQ, y la mac origen es la de la pc que llegó el ARPQ.
+Para el ARPR construimos la data similar al ARPQ lo que en vez de tener ARPQ en código ASCII tenemos ARPR ,la mac destino ahora es la mac origen del frame enviado por ARPQ, y la mac origen es la de la pc que que le llegó el ARPQ frame.
 
 
 
@@ -123,7 +123,7 @@ Vamos a explicar con un ejemplo sencillo la manera de proceder anterior:
 8 send_packet pc1 192.168.1.3 A
 ```
 
-Al querer enviar el packet formamos una instancia `Packet('A4B5', '192.168.1.3', '00001010') `y la agregamos a la lista packets del host pc1
+Al querer enviar el packet formamos una instancia `Packet('A4B5', '192.168.1.3', '00001010') `y la agregamos a la lista packets del host pc1(internamente se agrega el ip de pc1 al Packet)
 
 Luego enviamos un frame especial(ARPQ) con mac destino `'FFFF'`y y con data :
 
@@ -156,7 +156,7 @@ ip_packet = des_ip + ori_ip + ttl +protocol +len del payload + payload
 = '110000001010100000000001000000111100000010101000000000010000001000000000000000000000000100001010'
 ```
 
-Mandamos ese frame con data=ip_packet formado y una vez que el frame llegue a su destino pc2 revisa si es un frame de tipo ip_packet al comprobar que en efecto lo es escribe en su pc2_payload.txt lo siguiente:
+Mandamos ese frame con data=ip_packet formado y una vez que el frame llegue a su destino pc2 revisa si es un frame de tipo ip_packet y al comprobar que en efecto lo es escribe en su pc2_payload.txt lo siguiente:
 
 ```
 1174 192.168.1.2 A

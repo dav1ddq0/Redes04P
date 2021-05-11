@@ -9,7 +9,7 @@
 python main.py -f file.txt
 ```
 
-Ahora para más organización y dado que tenemos más archivos de registros para los dispositivos de la red tenemos en la carpeta Devices_Log una carpeta para cada dispositivo de la red dentro de la cua están los logs de cada cada de cada dispositivo
+Ahora para más organización y dado que tenemos más archivos de registros para los dispositivos de la red tenemos en la carpeta Devices_Log una carpeta para cada dispositivo de la red dentro de la cua están los logs  de cada dispositivo
 
 ### <img src="/home/davido/Documents/Proyectos/4/Redes04P/images/fig_3.1.png" alt="fig_3.1" style="zoom:50%;" />	
 
@@ -106,4 +106,33 @@ def ip_package(ori_ip,des_ip, payload, ttl=0, protocol=0):
 
 ```
 
-Para formar el ip package  formamos una cadena binaria donde los primeros 8bits
+Para formar el ip package  formamos una cadena binaria donde los primeros 4 bytes son el ip destino los próximos 4 bytes el ip origen 1byte para el ttl que por defecto es 0 , 1 byte para el protocolo que por defecto es 0, 1 byte para el tamaño del payload y el payload en binario
+
+Ese ip_package se pasa encapsulado como data de un frame y se envia de esta forma a la mac de la pc destino
+
+Vamos a explicar con un ejemplo sencillo la manera de proceder anterior:
+
+```
+1 create host pc1
+2 mac pc1 A4B5
+3 ip pc1 192.168.1.2 255.255.255.0
+4 create host pc2
+5 mac pc2 F1AD
+6 ip pc2 192.168.1.3 255.255.255.0
+7 connect pc1_1 pc2_1
+8 send_packet pc1 192.168.1.3 A
+```
+
+Al querer enviar el packet formamos una instancia `Packet('A4B5', '192.168.1.3', '00001010') `y la agregamos a la lista packets del host pc1
+
+Luego enviamos un frame especial(ARPQ) con mac destino `'FFFF'`y y con data :
+
+```
+'ARPQ' en binary ascii es '01000001010100100101000001010001'
+192.168.1.3 en binario es '11000000101010000000000100000011'
+'ARPQ'+192.168.1.3 ='0100000101010010010100000101000111000000101010000000000100000011'
+```
+
+Ahora envio un frame con send_frame desde el host pc1 con mac destino 'FFFF' y data ='0100000101010010010100000101000111000000101010000000000100000011'
+
+Al llegar este frame a su destino pc2 se comprueba que es del tipo ARPQ y entonces se envia un frame de respuesta ARPR desde pc2 hacia la mac destino A4B5 que corresponde a pc1 donde la data ahora es similar a la anterior lo que en vez de 'ARPQ' en binary ascii va a tener a 'ARPR' en binary ascii. 

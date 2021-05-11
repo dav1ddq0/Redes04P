@@ -135,4 +135,30 @@ Luego enviamos un frame especial(ARPQ) con mac destino `'FFFF'`y y con data :
 
 Ahora envio un frame con send_frame desde el host pc1 con mac destino 'FFFF' y data ='0100000101010010010100000101000111000000101010000000000100000011'
 
-Al llegar este frame a su destino pc2 se comprueba que es del tipo ARPQ y entonces se envia un frame de respuesta ARPR desde pc2 hacia la mac destino A4B5 que corresponde a pc1 donde la data ahora es similar a la anterior lo que en vez de 'ARPQ' en binary ascii va a tener a 'ARPR' en binary ascii. 
+Al llegar este frame a su destino pc2 se comprueba que es del tipo ARPQ y entonces se envia un frame de respuesta ARPR desde pc2 hacia la mac destino A4B5 que corresponde a pc1 donde la data ahora es similar a la anterior lo que en vez de 'ARPQ' en binary ascii va a tener a 'ARPR' en binary ascii:
+
+```
+'ARPR' en binary ascii:'01000001010100100101000001010010'
+192.168.1.3 en binario : '11000000101010000000000100000011'
+'ARPR' +192.168.1.3 = '0100000101010010010100000101001011000000101010000000000100000011'
+```
+
+una vez que el frame especial 'ARPR' llegue a pc1 entonces la mac origen corresponde al ip que se estaba pidiendo y se actualiza la propiedad mac_des del Packet guardado en la lista de packets de pc1 y se procede a enviar el ip_packet encapsulado como un frame que tiene como mac origen la mac de pc1 ('A4B5') como mac destino la mac de pc2('F1AD') que es la que corresponde con el ip al que se le quiere enviar el packet. El ip_packet va a ser una data del frame que tiene lo siguiente:
+
+```
+des_ip = '192.168.1.3' en binario (4bytes) = '11000000101010000000000100000011'
+ori_ip = '192.168.1.2' en binario (4bytes) = '11000000101010000000000100000010'
+ttl=0(1byte) '00000000'
+protocol==0(1byte) '00000000'
+len del payload en bytes = 1 ='00000001'
+payload en binario ='00001010'
+ip_packet = des_ip + ori_ip + ttl +protocol +len del payload + payload
+= '110000001010100000000001000000111100000010101000000000010000001000000000000000000000000100001010'
+```
+
+Mandamos ese frame con data=ip_packet formado y una vez que el frame llegue a su destino pc2 revisa si es un frame de tipo ip_packet al comprobar que en efecto lo es escribe en su pc2_payload.txt lo siguiente:
+
+```
+1174 192.168.1.2 A
+```
+

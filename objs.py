@@ -484,7 +484,7 @@ class Switch:
                             name = p2.name
                             p2buffer =  self.buffers[name]
                             if p2buffer.sending_frame != "":
-                                p2buffer.send_frame_pending.put(incoming_frame)
+                                p2buffer.sending_frame_pending.put(incoming_frame)
                             else:
                                 p2buffer.sending_frame = incoming_frame
                             nextbit = p2buffer.next_bit()

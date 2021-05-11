@@ -342,8 +342,9 @@ class Device_handler:
 
 
     def add_more_zeros(self, data:str):
-        morezeros = len(data) % 8
-        for i in range(morezeros):
+        # devuelve el reste que deja el multiplo de 8 (8q) mas cercano al len de data que es >= que len(data)
+        near_mul = lambda pow8, number : pow8% number if pow8 > number else near_mul(pow8+8, number)
+        for i in range(near_mul(8, len(data))):
             data = '0' +data
         return data
         
